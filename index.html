@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>POM &mdash; Password &amp; OTP Manager</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23ffffff'/%3E%3Crect x='4' y='5' width='16' height='14' rx='2' fill='%23000000'/%3E%3Crect x='7' y='8' width='10' height='8' rx='1' fill='none' stroke='%23ffffff' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <section id="lock-screen" class="screen active">
+    <div class="lock-card lock-card--split">
+      <div class="lock-text">
+        <div class="lock-icon lock-icon--landing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="2"/>
+            <rect x="7" y="7" width="10" height="10" rx="1"/>
+            <circle cx="12" cy="12" r="1.5"/>
+            <path d="M12 12v3"/>
+          </svg>
+        </div>
+        <h1>POM &mdash; Password &amp; OTP Manager</h1>
+        <p class="lock-sub">Elige una herramienta para continuar</p>
+        <div class="readme-text" id="readme-content">
+          <p class="info-loading">Cargando...</p>
+        </div>
+      </div>
+
+      <div class="landing-links">
+        <a href="LOM.html" class="landing-link primary-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <path d="M12 15v3"/>
+          </svg>
+          <span>Códigos OTP</span>
+        </a>
+        <a href="LPM.html" class="landing-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+          <span>Gestor de contraseñas</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  async function loadReadme() {
+    const el = document.getElementById('readme-content');
+    try {
+      const res = await fetch('README.md');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const md = await res.text();
+      el.innerHTML = mdToHtml(md);
+    } catch {
+      el.innerHTML = '<p class="info-error">No se pudo cargar README.md</p>';
+    }
+  }
+  function mdToHtml(md) {
+    const esc = t => t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    let html = '', lines = md.split('\n'), i = 0;
+    while (i < lines.length) {
+      let line = lines[i];
+      const trim = line.trim();
+      if (trim === '') { i++; continue; }
+      if (/^#{1,6}\s/.test(trim)) {
+        const level = trim.match(/^#{1,6}/)[0].length;
+        html += `<h${level}>${esc(trim.replace(/^#+\s*/,''))}</h${level}>`;
+        i++; continue;
+      }
+      if (/^---/.test(trim)) { html += '<hr>'; i++; continue; }
+      if (/^\- /.test(trim) || /^\* /.test(trim)) {
+        html += '<ul>';
+        while (i < lines.length && (/^\- /.test(lines[i].trim()) || /^\* /.test(lines[i].trim()))) {
+          html += `<li>${esc(lines[i].trim().replace(/^[\-\*]\s*/,''))}</li>`;
+          i++;
+        }
+        html += '</ul>';
+        continue;
+      }
+      let para = '';
+      while (i < lines.length && lines[i].trim() !== '' && !/^#{1,6}\s/.test(lines[i].trim()) && !/^---/.test(lines[i].trim())) {
+        para += (para ? ' ' : '') + lines[i].trim();
+        i++;
+      }
+      const p = esc(para)
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>');
+      html += `<p>${p}</p>`;
+    }
+    return html;
+  }
+  loadReadme();
+  </script>
+</body>
+</html>

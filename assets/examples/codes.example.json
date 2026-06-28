@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "a1b2c3d4e5f6",
+      "content": {
+        "uri": "otpauth://totp/Google:usuario@gmail.com?secret=JBSWY3DPEHPK3PXP&issuer=Google&algorithm=SHA1&digits=6&period=30",
+        "entry_type": "Totp",
+        "name": "usuario@gmail.com"
+      },
+      "note": null
+    },
+    {
+      "id": "f7e8d9c0b1a2",
+      "content": {
+        "uri": "otpauth://totp/GitHub:devuser?secret=GEZDGNBVGY3TQOJQ&issuer=GitHub&algorithm=SHA256&digits=6&period=30",
+        "entry_type": "Totp",
+        "name": "devuser"
+      },
+      "note": null
+    },
+    {
+      "id": "b3c4d5e6f7a8",
+      "content": {
+        "uri": "otpauth://totp/Proton:cuenta%20personal?secret=JBSWY3DPEHPK3PXP&issuer=Proton&algorithm=SHA1&digits=8&period=30",
+        "entry_type": "Totp",
+        "name": "cuenta personal"
+      },
+      "note": "Cuenta principal"
+    },
+    {
+      "id": "e9f0a1b2c3d4",
+      "content": {
+        "uri": "otpauth://hotp/Banco:cuenta%20principal?secret=JBSWY3DPEHPK3PXP&issuer=Banco&algorithm=SHA1&digits=6&counter=0",
+        "entry_type": "Totp",
+        "name": "cuenta principal"
+      },
+      "note": null
+    }
+  ]
+}

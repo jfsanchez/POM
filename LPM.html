@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>Local Password Manager</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z' fill='%23c2185b'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/styles.css">
+
+</head>
+<body>
+
+  <!-- ============ LOCK SCREEN ============ -->
+  <section id="lock-screen" class="screen active">
+    <div class="lock-card">
+      <div class="lock-icon lock-icon--pwd">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <h1>Local Password Manager</h1>
+      <p class="lock-sub">Soporta backups cifrados en formato Proton Pass</p>
+
+      <div id="file-status" class="file-status" hidden>
+        <span id="file-status-icon" class="file-status-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="M7 10l5 5 5-5"/>
+            <path d="M12 15V3"/>
+          </svg>
+        </span>
+        <span id="file-status-name" class="file-status-name"></span>
+        <span id="file-status-source" class="file-status-source"></span>
+        <button id="file-status-clear" class="ghost icon-only file-status-clear" type="button" title="Quitar archivo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="unlock-form" autocomplete="off">
+        <div class="field">
+          <input type="password" id="password" placeholder="Contraseña del archivo zip"
+                 autocomplete="off" autocapitalize="off" spellcheck="false" required>
+          <button type="button" id="toggle-pw" class="ghost icon-btn" aria-label="Mostrar contraseña" title="Mostrar/ocultar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <button type="submit" id="unlock-btn" class="primary">
+          <span class="btn-label">Desbloquear</span>
+          <span class="btn-spin" hidden></span>
+        </button>
+      </form>
+
+      <div id="lock-error" class="error" role="alert"></div>
+
+      <div class="options-section">
+        <div class="options-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Opciones</span>
+        </div>
+
+        <div class="show-defaults">
+          <label class="switch-toggle compact">
+            <input type="checkbox" id="def-show-users" checked>
+            <span class="switch-track"></span>
+            <span class="switch-text">Usuarios</span>
+          </label>
+          <label class="switch-toggle compact">
+            <input type="checkbox" id="def-show-otps" checked>
+            <span class="switch-track"></span>
+            <span class="switch-text">OTP</span>
+          </label>
+          <label class="switch-toggle compact">
+            <input type="checkbox" id="def-show-notes" checked>
+            <span class="switch-track"></span>
+            <span class="switch-text">Notas</span>
+          </label>
+        </div>
+
+        <div id="file-source-options">
+          <label class="file-picker file-picker-primary" id="file-picker-label">
+            <input type="file" id="file-input" accept=".zip,application/zip" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <path d="M17 8l-5-5-5 5"/>
+              <path d="M12 3v12"/>
+            </svg>
+            <span id="picker-text">Seleccionar archivo zip…</span>
+          </label>
+
+          <button id="create-vault-btn" class="ghost btn-create-vault" type="button" style="width:100%;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            <span>Crear bóveda vacía</span>
+          </button>
+
+          <button id="load-default-btn" class="btn-demo-subtle" type="button">
+            Cargar archivo de prueba
+          </button>
+        </div>
+        <div class="nav-app-links">
+          <a href="index.html" class="nav-app-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#fff"/><rect x="5" y="6" width="14" height="12" rx="1.5" fill="#000"/><rect x="7.5" y="8.5" width="9" height="7" rx="1" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
+            <span>Inicio</span>
+          </a>
+          <a href="LOM.html" class="nav-app-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#69f0ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4.2"/><path d="M10.9 12.1 21 2m-3 0 3 3m-5-1 2 2"/></svg>
+            <span>Códigos OTP</span>
+          </a>
+        </div>
+      </div>
+
+      <p class="lock-hint">
+        Los datos solo se mantienen en memoria RAM. Se pierden al recargar o cerrar la página.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ APP SCREEN ============ -->
+  <section id="app-screen" class="screen">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand-icon brand-icon--pwd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+        <h1>LPM</h1>
+      </div>
+
+      <div class="controls">
+        <div class="view-options" id="view-options">
+          <button id="view-options-btn" class="ghost" type="button" title="Opciones de vista" style="gap:4px">
+            Filtros <span id="view-summary"></span>
+          </button>
+          <div id="view-dropdown" class="view-dropdown" hidden>
+            <div class="vd-section">
+              <div class="vd-label">Filtrar por tipo</div>
+              <div id="vd-types"></div>
+            </div>
+            <div class="vd-sep"></div>
+            <div class="vd-section">
+              <div class="vd-label">Mostrar</div>
+              <label class="vd-check"><input type="checkbox" id="show-all-users"> <span>Usuarios</span></label>
+              <label class="vd-check"><input type="checkbox" id="show-all-notes"> <span>Notas</span></label>
+              <label class="vd-check"><input type="checkbox" id="show-all-otps"> <span>OTP</span></label>
+            </div>
+          </div>
+        </div>
+        <button id="grid-btn" class="ghost" type="button" title="Cambiar columnas" style="gap:3px;font-size:0.78rem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span id="grid-label">1</span>
+        </button>
+        <span class="controls-sep"></span>
+        <button id="add-btn" class="ghost icon-only" type="button" title="Añadir elemento (A)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span class="kbd-badge">A</span>
+        </button>
+        <button id="export-btn" class="ghost icon-only" type="button" title="Descargar zip cifrado (D)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="M7 10l5 5 5-5"/>
+            <path d="M12 15V3"/>
+          </svg>
+          <span class="kbd-badge">D</span>
+        </button>
+        <button id="change-pw-btn" class="ghost icon-only" type="button" title="Cambiar contraseña (C)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 6.5m0 0 3 3L22 6l-3-3"/>
+          </svg>
+          <span class="kbd-badge">C</span>
+        </button>
+        <span id="item-count" class="item-count"></span>
+        <div class="search search-right">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input id="search" type="search" placeholder="Buscar…" autocomplete="off">
+          <kbd class="search-kbd" aria-hidden="true">/</kbd>
+        </div>
+        <button id="lock-btn" class="ghost icon-only" title="Bloquear (B)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="11" width="16" height="10" rx="2"/>
+            <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+          </svg>
+          <span class="kbd-badge">B</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <div id="items-list" class="pwd-list"></div>
+      <p id="empty-state" class="empty" hidden>No hay elementos que coincidan.</p>
+    </main>
+  </section>
+
+  <!-- ============ MODAL: Añadir/Editar elemento ============ -->
+  <div id="item-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-modal-close="item-modal"></div>
+    <div class="modal-card modal-card-wide">
+      <div class="modal-header">
+        <h2 id="item-modal-title">Nuevo elemento</h2>
+        <button class="modal-close" data-modal-close="item-modal" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <label class="form-field form-field-full">
+            <span>Nombre del sitio / título</span>
+            <input id="item-name" type="text" placeholder="Google, GitHub, ..." autocomplete="off">
+          </label>
+          <label class="form-field">
+            <span>Bóveda</span>
+            <select id="item-vault"></select>
+          </label>
+          <label class="form-field">
+            <span>Tipo</span>
+            <div>
+              <select id="item-type">
+                <option value="login">🔑 Inicio de sesión</option>
+                <option value="note">📄 Nota</option>
+                <option value="alias">✉️ Alias</option>
+                <option value="creditCard">💳 Tarjeta</option>
+                <option value="identity">👤 Identidad</option>
+                <option value="password">🔒 Contraseña</option>
+              </select>
+            </div>
+          </label>
+          <label class="form-field form-field-half" data-edit-group="email">
+            <span id="item-email-label">Email</span>
+            <input id="item-email" type="email" placeholder="usuario@ejemplo.com" autocomplete="off">
+          </label>
+          <label class="form-field form-field-half" data-edit-group="username">
+            <span>Usuario</span>
+            <input id="item-username" type="text" placeholder="nombredeusuario" autocomplete="off">
+          </label>
+          <label class="form-field form-field-full" data-edit-group="password">
+            <span>Contraseña</span>
+            <div class="field-row">
+              <input id="item-password" type="text" placeholder="••••••••" autocomplete="off" spellcheck="false" style="flex:1">
+              <button type="button" id="gen-password" class="ghost" title="Generar contraseña" style="padding:8px 10px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px">
+                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 6.5m0 0 3 3L22 6l-3-3"/>
+                </svg>
+              </button>
+            </div>
+          </label>
+          <label class="form-field form-field-full" data-edit-group="totp">
+            <span>URI TOTP (opcional)</span>
+            <input id="item-totp" type="text" placeholder="otpauth://totp/..." autocomplete="off" spellcheck="false">
+          </label>
+          <div id="totp-preview" class="totp-preview" hidden>
+            <svg class="totp-ring" viewBox="0 0 28 28" width="28" height="28">
+              <circle class="totp-ring-bg" cx="14" cy="14" r="12"/>
+              <circle class="totp-ring-fg" id="preview-totp-ring" cx="14" cy="14" r="12"/>
+            </svg>
+            <span class="tp-label">Actual:</span>
+            <span class="totp-code-value tp-code" id="preview-totp-code" data-action="copy-tp" data-copy="current">------</span>
+            <button class="pwd-btn tp-copy" data-action="copy-tp" data-copy="current" title="Copiar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
+            <span class="tp-next-group">
+              <span class="tp-next-label">Siguiente:</span>
+              <span class="tp-next-code" id="preview-totp-next">------</span>
+            </span>
+          </div>
+          <label class="form-field form-field-full" data-edit-group="url">
+            <span>URL del sitio</span>
+            <input id="item-url" type="url" placeholder="https://ejemplo.com" autocomplete="off">
+          </label>
+          <label class="form-field form-field-full" data-edit-group="notes">
+            <span>Notas</span>
+            <textarea id="item-notes" rows="3" placeholder="Notas..." autocomplete="off" style="resize:vertical;background:rgba(0,0,0,0.3);border:1px solid var(--card-border);color:var(--text);padding:10px 12px;border-radius:10px;font-size:0.9rem;outline:none;font-family:var(--sans)"></textarea>
+          </label>
+          <div id="item-type-fields" class="item-type-fields"></div>
+          <div class="form-field form-field-full">
+            <span>Archivos adjuntos</span>
+            <input type="file" id="item-file-input" multiple hidden>
+            <div class="file-picker" id="item-file-picker" style="margin:0;margin-top:4px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <path d="M17 8l-5-5-5 5"/>
+                <path d="M12 3v12"/>
+              </svg>
+              <span id="item-file-text">Seleccionar archivos...</span>
+            </div>
+            <div id="item-files-list"></div>
+          </div>
+        </div>
+        <div id="item-error" class="error"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="ghost" data-modal-close="item-modal">Cancelar</button>
+        <button id="item-save" class="primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: Cambiar contraseña ============ -->
+  <div id="pw-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-modal-close="pw-modal"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Cambiar contraseña del zip</h2>
+        <button class="modal-close" data-modal-close="pw-modal" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-info">La nueva contraseña se usará al descargar el zip cifrado.</p>
+        <label class="form-field"><span>Nueva contraseña</span><input id="new-pw" type="password" autocomplete="off"></label>
+        <label class="form-field"><span>Confirmar contraseña</span><input id="new-pw2" type="password" autocomplete="off"></label>
+        <div id="pw-error" class="error"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="ghost" data-modal-close="pw-modal">Cancelar</button>
+        <button id="pw-confirm" class="primary">Cambiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: Crear bóveda vacía ============ -->
+  <div id="create-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-modal-close="create-modal"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Crear bóveda vacía</h2>
+        <button class="modal-close" data-modal-close="create-modal" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-info">Se creará un archivo zip cifrado sin elementos. Elige una contraseña para protegerlo.</p>
+        <label class="form-field"><span>Contraseña</span><input id="create-pw" type="password" autocomplete="off"></label>
+        <label class="form-field"><span>Confirmar contraseña</span><input id="create-pw2" type="password" autocomplete="off"></label>
+        <div id="create-error" class="error"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="ghost" data-modal-close="create-modal">Cancelar</button>
+        <button id="create-confirm" class="primary">Crear</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/jszip.min.js"></script>
+  <script src="assets/js/openpgp.min.js"></script>
+  <script src="assets/js/pwd-manager.js"></script>
+</body>
+</html>

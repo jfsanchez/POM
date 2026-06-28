@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <title>Local OTP Manager</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z' fill='%2300c853'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+  <!-- (Los colores del anillo se definen por etapa en styles.css) -->
+
+  <!-- ============ Pantalla de bloqueo ============ -->
+  <section id="lock-screen" class="screen active">
+    <div class="lock-card">
+      <div class="lock-icon lock-icon--otp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="8" cy="15" r="4.2"/>
+          <path d="M10.9 12.1 21 2m-3 0 3 3m-5-1 2 2"/>
+        </svg>
+      </div>
+      <h1>Local OTP Manager</h1>
+      <p class="lock-sub">Soporta backups cifrados de Proton Authenticator</p>
+
+      <form id="unlock-form" autocomplete="off">
+        <div class="field">
+          <input type="password" id="password" placeholder="Contraseña"
+                 autocomplete="off" autocapitalize="off" spellcheck="false" required>
+          <button type="button" id="toggle-pw" class="ghost icon-btn" aria-label="Mostrar contraseña" title="Mostrar/ocultar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <button type="submit" id="unlock-btn" class="primary">
+          <span class="btn-label">Desbloquear</span>
+          <span class="btn-spin" hidden></span>
+        </button>
+      </form>
+
+      <div id="lock-error" class="error" role="alert"></div>
+
+      <div class="options-section">
+        <div class="options-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          <span>Opciones</span>
+        </div>
+        <label class="switch-toggle">
+          <input type="checkbox" id="show-codes-lock" checked>
+          <span class="switch-track"></span>
+          <span class="switch-text">Mostrar códigos</span>
+        </label>
+        <div id="file-source-options">
+          <label class="file-picker file-picker-primary" id="file-picker-label">
+            <input type="file" id="file-input" accept=".json,application/json" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <path d="M17 8l-5-5-5 5"/>
+              <path d="M12 3v12"/>
+            </svg>
+            <span id="picker-text">Subir archivo de copia…</span>
+          </label>
+          <button id="blank-vault-btn" class="ghost btn-create-vault" type="button" style="width:100%;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            <span>Crear bóveda vacía</span>
+          </button>
+          <button id="example-btn" class="btn-demo-subtle" type="button">
+            Usar archivo de ejemplo
+          </button>
+        </div>
+        <div class="nav-app-links">
+          <a href="index.html" class="nav-app-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#fff"/><rect x="5" y="6" width="14" height="12" rx="1.5" fill="#000"/><rect x="7.5" y="8.5" width="9" height="7" rx="1" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
+            <span>Inicio</span>
+          </a>
+          <a href="LPM.html" class="nav-app-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#e040fb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Gestor de contraseñas</span>
+          </a>
+        </div>
+      </div>
+
+      <p class="lock-hint">
+        Los datos solo se mantienen en memoria RAM. Se pierden al recargar o cerrar la página.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ Pantalla principal ============ -->
+  <section id="app-screen" class="screen">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand-icon brand-icon--otp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+        <h1>LOM</h1>
+      </div>
+
+      <div class="controls">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/>
+            <path d="m21 21-4.3-4.3"/>
+          </svg>
+          <input id="search" type="search" placeholder="Buscar cuenta o emisor…" autocomplete="off">
+          <kbd class="search-kbd" aria-hidden="true">/</kbd>
+        </div>
+        <label class="switch-toggle compact" title="Mostrar u ocultar los códigos">
+          <input type="checkbox" id="show-codes-app" checked>
+          <span class="switch-track"></span>
+          <span class="switch-text">Mostrar códigos</span>
+        </label>
+        <button id="add-btn" class="ghost icon-only" title="Añadir código (A)" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          <span class="kbd-badge">A</span>
+        </button>
+        <button id="export-btn" class="ghost icon-only" title="Exportar códigos (D)" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <path d="M7 10l5 5 5-5"/>
+            <path d="M12 15V3"/>
+          </svg>
+          <span class="kbd-badge">D</span>
+        </button>
+        <button id="pw-btn" class="ghost icon-only" title="Cambiar contraseña (C)" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.778-7.778zm0 0L15.5 6.5m0 0 3 3L22 6l-3-3"/>
+          </svg>
+          <span class="kbd-badge">C</span>
+        </button>
+        <div style="position:relative;">
+          <button id="time-btn" class="ghost icon-only" title="Fijar fecha/hora para códigos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </button>
+          <div id="time-popover" class="time-popover">
+            <strong style="font-size:0.85rem;">Fecha/hora para códigos</strong>
+            <div class="time-effective" id="time-effective" hidden>
+              <span class="time-effective-label">Hora efectiva (avanzando)</span>
+              <span class="time-effective-value" id="time-effective-value">--</span>
+            </div>
+            <label class="time-mode">
+              <input type="radio" name="time-mode" value="real" checked>
+              <span>Hora actual del sistema</span>
+            </label>
+            <label class="time-mode">
+              <input type="radio" name="time-mode" value="offset">
+              <span>Fecha/hora corregida (avanza con el reloj)</span>
+            </label>
+            <label id="offset-input-wrap" hidden>Indica qué fecha/hora es "ahora" para ti
+              <input type="datetime-local" id="time-offset-dt">
+            </label>
+            <label class="time-mode">
+              <input type="radio" name="time-mode" value="fixed">
+              <span>Fecha y hora fija (no avanza)</span>
+            </label>
+            <label id="fixed-input-wrap" hidden>Fecha y hora fija
+              <input type="datetime-local" id="time-fixed">
+            </label>
+            <div class="time-buttons">
+              <button class="ghost" id="time-now-btn" type="button">Restablecer</button>
+              <button class="primary" id="time-set-btn" type="button" style="width:auto;padding:8px 16px;">Aplicar</button>
+            </div>
+          </div>
+        </div>
+        <button id="lock-btn" class="ghost icon-only" title="Bloquear (B)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="11" width="16" height="10" rx="2"/>
+            <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+          </svg>
+          <span class="kbd-badge">B</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <div id="codes-grid" class="grid"></div>
+      <p id="empty-state" class="empty" hidden>No hay códigos que coincidan con la búsqueda.</p>
+    </main>
+  </section>
+
+  <!-- ============ Modal: Añadir código ============ -->
+  <div id="add-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-modal-close="add-modal"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Añadir código</h2>
+        <button class="modal-close" data-modal-close="add-modal" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs">
+          <button class="tab active" data-tab="uri">URI otpauth://</button>
+          <button class="tab" data-tab="manual">Manual</button>
+        </div>
+        <div class="tab-pane" data-tab="uri">
+          <textarea id="add-uri" class="mono-input" rows="3" placeholder="otpauth://totp/Google:usuario@gmail.com?secret=JBSWY3DPEHPK3PXP&issuer=Google&algorithm=SHA1&digits=6&period=30" autocomplete="off" spellcheck="false"></textarea>
+        </div>
+        <div class="tab-pane" data-tab="manual" hidden>
+          <div class="form-grid">
+            <label class="form-field"><span>Emisor</span><input id="m-issuer" type="text" placeholder="Google" autocomplete="off"></label>
+            <label class="form-field"><span>Cuenta / usuario</span><input id="m-name" type="text" placeholder="usuario@gmail.com" autocomplete="off"></label>
+            <label class="form-field"><span>Secreto (Base32)</span><input id="m-secret" type="text" placeholder="JBSWY3DPEHPK3PXP" autocomplete="off" spellcheck="false"></label>
+            <label class="form-field"><span>Tipo</span>
+              <select id="m-type"><option value="totp">TOTP</option><option value="hotp">HOTP</option></select>
+            </label>
+            <label class="form-field"><span>Algoritmo</span>
+              <select id="m-algo"><option value="SHA1">SHA-1</option><option value="SHA256">SHA-256</option><option value="SHA512">SHA-512</option></select>
+            </label>
+            <label class="form-field"><span>Dígitos</span><input id="m-digits" type="number" value="6" min="6" max="8"></label>
+            <label class="form-field"><span>Periodo (s)</span><input id="m-period" type="number" value="30" min="1"></label>
+            <label class="form-field" id="m-counter-wrap"><span>Contador (HOTP)</span><input id="m-counter" type="number" value="0" min="0"></label>
+          </div>
+        </div>
+        <div id="add-error" class="error"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="ghost" data-modal-close="add-modal">Cancelar</button>
+        <button id="add-confirm" class="primary"><u>A</u>ñadir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Modal: Editar código ============ -->
+  <div id="edit-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-modal-close="edit-modal"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Editar código</h2>
+        <button class="modal-close" data-modal-close="edit-modal" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <label class="form-field"><span>Emisor</span><input id="e-issuer" type="text" autocomplete="off"></label>
+          <label class="form-field"><span>Cuenta / usuario</span><input id="e-name" type="text" autocomplete="off"></label>
+          <label class="form-field"><span>Secreto (Base32)</span><input id="e-secret" type="text" autocomplete="off" spellcheck="false"></label>
+          <label class="form-field"><span>Tipo</span>
+            <select id="e-type"><option value="totp">TOTP</option><option value="hotp">HOTP</option></select>
+          </label>
+          <label class="form-field"><span>Algoritmo</span>
+            <select id="e-algo"><option value="SHA1">SHA-1</option><option value="SHA256">SHA-256</option><option value="SHA512">SHA-512</option></select>
+          </label>
+          <label class="form-field"><span>Dígitos</span><input id="e-digits" type="number" min="6" max="8"></label>
+          <label class="form-field"><span>Periodo (s)</span><input id="e-period" type="number" min="1"></label>
+          <label class="form-field" id="e-counter-wrap"><span>Contador (HOTP)</span><input id="e-counter" type="number" min="0"></label>
+          <label class="form-field" style="grid-column:1/-1"><span>Nota</span><input id="e-note" type="text" autocomplete="off"></label>
+        </div>
+        <div id="edit-error" class="error"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="ghost" data-modal-close="edit-modal">Cancelar</button>
+        <button id="edit-confirm" class="primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Modal: Cambiar contraseña ============ -->
+  <div id="pw-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-modal-close="pw-modal"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Cambiar contraseña de cifrado</h2>
+        <button class="modal-close" data-modal-close="pw-modal" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-info">La nueva contraseña se usará al exportar los códigos. No se guarda en ningún sitio.</p>
+        <label class="form-field"><span>Nueva contraseña</span><input id="new-pw" type="password" autocomplete="off"></label>
+        <label class="form-field"><span>Confirmar contraseña</span><input id="new-pw2" type="password" autocomplete="off"></label>
+        <div id="pw-error" class="error"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="ghost" data-modal-close="pw-modal">Cancelar</button>
+        <button id="pw-confirm" class="primary">Cambiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Modal: Crear bóveda en blanco ============ -->
+  <div id="blank-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-modal-close="blank-modal"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Crear bóveda en blanco</h2>
+        <button class="modal-close" data-modal-close="blank-modal" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-info">La contraseña se usará para cifrar la bóveda al exportarla. No se guarda en ningún sitio.</p>
+        <label class="form-field"><span>Contraseña</span><input id="blank-pw" type="password" autocomplete="off"></label>
+        <label class="form-field"><span>Confirmar contraseña</span><input id="blank-pw2" type="password" autocomplete="off"></label>
+        <div id="blank-error" class="error"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="ghost" data-modal-close="blank-modal">Cancelar</button>
+        <button id="blank-confirm" class="primary">Crear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Modal: Semilla secreta (QR) ============ -->
+  <div id="secret-modal" class="modal" hidden>
+    <div class="modal-backdrop" data-modal-close="secret-modal"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="secret-modal-title">Semilla secreta</h2>
+        <button class="modal-close" data-modal-close="secret-modal" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="secret-modal-content">
+          <div id="secret-qr" class="secret-qr"></div>
+          <div class="secret-toggle">
+            <button class="ghost" id="secret-toggle-btn" type="button">Mostrar semilla secreta</button>
+          </div>
+          <div class="secret-text-wrap">
+            <code id="secret-text" class="secret-text"></code>
+            <button class="secret-copy-btn" id="secret-copy-btn" type="button" title="Copiar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="ghost" data-modal-close="secret-modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/hash-wasm.umd.js"></script>
+  <script src="assets/js/qrcode.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
