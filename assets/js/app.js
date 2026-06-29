@@ -1527,6 +1527,110 @@
       }
     });
 
+    /* --- Escanear QR con la cámara --- */
+    document.getElementById("scan-btn").addEventListener("click", function () {
+      if (typeof window.jsQR === "undefined") {
+        toast("No se pudo cargar el lector QR (jsQR). Revisa la conexión.");
+        return;
+      }
+      startQrScanner(function (data) {
+        // Asegurar que la pestaña URI está activa
+        var uriTab = document.querySelector('.tab[data-tab="uri"]');
+        if (uriTab && !uriTab.classList.contains("active")) uriTab.click();
+        document.getElementById("add-uri").value = data;
+        document.getElementById("add-error").textContent = "";
+        toast("Código QR leído");
+      });
+    });
+
+    function startQrScanner(onSuccess) {
+      var overlay = document.createElement("div");
+      overlay.className = "qr-overlay";
+      overlay.innerHTML =
+        '<video id="qr-video" autoplay playsinline muted></video>' +
+        '<div class="qr-frame"></div>' +
+        '<div class="qr-hint">Centra el código QR dentro del recuadro</div>' +
+        '<button class="qr-close" type="button" aria-label="Cerrar">×</button>';
+      document.body.appendChild(overlay);
+
+      var video = overlay.querySelector("#qr-video");
+      var closeBtn = overlay.querySelector(".qr-close");
+      var hint = overlay.querySelector(".qr-hint");
+      var canvas = document.createElement("canvas");
+      var ctx = canvas.getContext("2d", { willReadFrequently: true });
+      var stream = null;
+      var raf = null;
+      var stopped = false;
+
+      function showError(msg) {
+        if (stopped) return;
+        stopped = true;
+        if (raf) cancelAnimationFrame(raf);
+        if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
+        video.style.display = "none";
+        var frame = overlay.querySelector(".qr-frame");
+        if (frame) frame.style.display = "none";
+        hint.innerHTML = msg + '<br><br><span style="opacity:.7">Toca × para cerrar</span>';
+        hint.style.fontSize = "0.95rem";
+        hint.style.padding = "0 24px";
+      }
+
+      function stop() {
+        stopped = true;
+        if (raf) cancelAnimationFrame(raf);
+        if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      }
+      closeBtn.addEventListener("click", stop);
+
+      // Comprobar contexto seguro (getUserMedia solo funciona en https o localhost)
+      var isSecure = location.protocol === "https:" ||
+                     location.hostname === "localhost" ||
+                     location.hostname === "127.0.0.1";
+      if (!isSecure || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showError("La cámara requiere HTTPS (o localhost).<br>Accede desde una URL <strong>https://</strong> o por <strong>localhost:8080</strong>.");
+        return;
+      }
+
+      try {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+          .then(function (s) {
+            stream = s;
+            video.srcObject = s;
+            return video.play();
+          })
+          .then(function () {
+            (function tick() {
+              if (stopped) return;
+              if (video.readyState >= 2 && video.videoWidth > 0) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                var res = window.jsQR(img.data, img.width, img.height);
+                if (res && res.data) {
+                  var data = res.data.trim();
+                  if (data) {
+                    stop();
+                    onSuccess(data);
+                    return;
+                  }
+                }
+              }
+              raf = requestAnimationFrame(tick);
+            })();
+          })
+          .catch(function (err) {
+            var msg = (err && err.name === "NotAllowedError")
+              ? "Permiso de cámara denegado.<br>Actívalo en los ajustes del navegador."
+              : "No se pudo acceder a la cámara: " + (err && err.message ? err.message : err);
+            showError(msg);
+          });
+      } catch (err) {
+        showError("No se pudo acceder a la cámara: " + (err.message || err));
+      }
+    }
+
     /* --- Cerrar modales con Escape --- */
     document.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
