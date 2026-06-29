@@ -34,14 +34,14 @@
             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             <path d="M12 15v3"/>
           </svg>
-          <span>Códigos OTP</span>
+          <span>Códigos <u>O</u>TP</span>
         </a>
         <a href="LPM.html" class="landing-link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="7" width="20" height="14" rx="2"/>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
           </svg>
-          <span>Gestor de contraseñas</span>
+          <span>Gestor de <u>c</u>ontraseñas (<u>P</u>)</span>
         </a>
       </div>
     </div>
@@ -94,6 +94,17 @@
     return html;
   }
   loadReadme();
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'o' || e.key === 'O') {
+      e.preventDefault();
+      window.location.href = 'LOM.html';
+    }
+    if (e.key === 'c' || e.key === 'C' || e.key === 'p' || e.key === 'P') {
+      e.preventDefault();
+      window.location.href = 'LPM.html';
+    }
+  });
   </script>
 </body>
 </html>

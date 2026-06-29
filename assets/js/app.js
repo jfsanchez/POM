@@ -1028,7 +1028,7 @@
       pickerText.title = STATE.fileName;
       pickerLabel.classList.add("loaded");
     } else {
-      pickerText.textContent = "Subir archivo de copia…";
+      pickerText.innerHTML = "Subir archivo de backup en JSON (<u>U</u>)";
       pickerText.title = "";
       pickerLabel.classList.remove("loaded");
     }

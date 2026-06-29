@@ -95,28 +95,28 @@
               <path d="M17 8l-5-5-5 5"/>
               <path d="M12 3v12"/>
             </svg>
-            <span id="picker-text">Seleccionar archivo zip…</span>
+            <span id="picker-text">Subir archivo de backup en zip (<u>U</u>)</span>
           </label>
 
           <button id="create-vault-btn" class="ghost btn-create-vault" type="button" style="width:100%;justify-content:center">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
               <path d="M12 5v14M5 12h14"/>
             </svg>
-            <span>Crear bóveda vacía</span>
+            <span>Crear bóveda vacía (<u>V</u>)</span>
           </button>
 
           <button id="load-default-btn" class="btn-demo-subtle" type="button">
-            Cargar archivo de prueba
+            Cargar archivo de prueba (<u>T</u>)
           </button>
         </div>
         <div class="nav-app-links">
           <a href="index.html" class="nav-app-link">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#fff"/><rect x="5" y="6" width="14" height="12" rx="1.5" fill="#000"/><rect x="7.5" y="8.5" width="9" height="7" rx="1" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
-            <span>Inicio</span>
+            <span><u>I</u>nicio</span>
           </a>
           <a href="LOM.html" class="nav-app-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="#69f0ae" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4.2"/><path d="M10.9 12.1 21 2m-3 0 3 3m-5-1 2 2"/></svg>
-            <span>Códigos OTP</span>
+            <span>Códigos <u>O</u>TP</span>
           </a>
         </div>
       </div>
@@ -351,5 +351,40 @@
   <script src="assets/js/jszip.min.js"></script>
   <script src="assets/js/openpgp.min.js"></script>
   <script src="assets/js/pwd-manager.js"></script>
+  <script>
+  document.addEventListener('keydown', e => {
+    const lock = document.getElementById('lock-screen');
+    if (!lock || !lock.classList.contains('active')) return;
+
+    if (e.key === 'Escape' && document.activeElement) {
+      document.activeElement?.blur();
+      return;
+    }
+
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    if (e.key === 'Home' || e.key === 'I' || e.key === 'i') {
+      e.preventDefault();
+      window.location.href = 'index.html';
+    }
+    if (e.key === 'O' || e.key === 'o') {
+      e.preventDefault();
+      window.location.href = 'LOM.html';
+    }
+    if (e.key === 'T' || e.key === 't') {
+      e.preventDefault();
+      document.getElementById('load-default-btn')?.click();
+    }
+    if (e.key === 'V' || e.key === 'v') {
+      e.preventDefault();
+      document.getElementById('create-vault-btn')?.click();
+    }
+    if (e.key === 'U' || e.key === 'u') {
+      e.preventDefault();
+      document.getElementById('file-input')?.click();
+    }
+  });
+  </script>
 </body>
 </html>

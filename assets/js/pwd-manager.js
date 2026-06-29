@@ -1297,7 +1297,7 @@
     } else {
       fileStatus.hidden = true;
       fileSourceOptions.hidden = false;
-      pickerText.textContent = "Seleccionar archivo zip\u2026";
+      pickerText.innerHTML = "Subir archivo de backup en zip (<u>U</u>)";
       pickerLabel.classList.remove("loaded");
     }
   }
@@ -1417,6 +1417,7 @@
     createPw2.value = "";
     createError.textContent = "";
     openModal(createModal);
+    createPw.focus();
   }
 
   function doCreateVault() {
