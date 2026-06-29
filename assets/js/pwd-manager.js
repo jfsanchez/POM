@@ -1277,7 +1277,6 @@
     searchInput.value = "";
     if (fileInput) fileInput.value = "";
     updateFileInfo();
-    setTimeout(function () { passwordInput.focus(); }, 50);
   }
 
   function updateFileInfo() {

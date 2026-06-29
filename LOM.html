@@ -24,6 +24,44 @@
       <h1>Local OTP Manager</h1>
       <p class="lock-sub">Soporta backups cifrados de Proton Authenticator</p>
 
+      <div class="options-section">
+        <div class="options-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>Seleccione archivo</span>
+        </div>
+        <div id="file-source-options">
+          <label class="file-picker file-picker-primary" id="file-picker-label">
+            <input type="file" id="file-input" accept=".json,application/json" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <path d="M17 8l-5-5-5 5"/>
+              <path d="M12 3v12"/>
+            </svg>
+            <span id="picker-text">Subir archivo de backup en JSON (<u>U</u>)</span>
+          </label>
+          <button id="blank-vault-btn" class="ghost btn-create-vault" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            <span>Crear bóveda vacía (<u>V</u>)</span>
+          </button>
+          <button id="example-btn" class="btn-demo-subtle" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Cargar archivo de prueba (<u>T</u>)</span>
+          </button>
+        </div>
+        <div class="show-defaults">
+          <span class="view-settings-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg> Ajustes de visualización:</span>
+          <label class="switch-toggle compact">
+            <input type="checkbox" id="show-codes-lock" checked>
+            <span class="switch-track"></span>
+            <span class="switch-text">Mostrar códigos</span>
+          </label>
+        </div>
+      </div>
+
       <form id="unlock-form" autocomplete="off">
         <div class="field">
           <input type="password" id="password" placeholder="Contraseña"
@@ -43,54 +81,20 @@
 
       <div id="lock-error" class="error" role="alert"></div>
 
-      <div class="options-section">
-        <div class="options-header">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09A1.65 1.65 0 0 0 15 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-          </svg>
-          <span>Opciones</span>
-        </div>
-        <label class="switch-toggle">
-          <input type="checkbox" id="show-codes-lock" checked>
-          <span class="switch-track"></span>
-          <span class="switch-text">Mostrar códigos</span>
-        </label>
-        <div id="file-source-options">
-          <label class="file-picker file-picker-primary" id="file-picker-label">
-            <input type="file" id="file-input" accept=".json,application/json" hidden>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <path d="M17 8l-5-5-5 5"/>
-              <path d="M12 3v12"/>
-            </svg>
-            <span id="picker-text">Subir archivo de backup en JSON (<u>U</u>)</span>
-          </label>
-          <button id="blank-vault-btn" class="ghost btn-create-vault" type="button" style="width:100%;justify-content:center">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
-            <span>Crear bóveda vacía (<u>V</u>)</span>
-          </button>
-          <button id="example-btn" class="btn-demo-subtle" type="button">
-            Usar archivo de ejemplo (<u>T</u>)
-          </button>
-        </div>
-        <div class="nav-app-links">
-          <a href="index.html" class="nav-app-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#fff"/><rect x="5" y="6" width="14" height="12" rx="1.5" fill="#000"/><rect x="7.5" y="8.5" width="9" height="7" rx="1" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
-            <span><u>I</u>nicio</span>
-          </a>
-          <a href="LPM.html" class="nav-app-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#e040fb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>
-            <span>Gestor de <u>c</u>ontraseñas (<u>P</u>)</span>
-          </a>
-        </div>
-      </div>
-
       <p class="lock-hint">
         Los datos solo se mantienen en memoria RAM. Se pierden al recargar o cerrar la página.
       </p>
+
+      <div class="nav-app-links">
+        <a href="index.html" class="nav-app-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#fff"/><rect x="5" y="6" width="14" height="12" rx="1.5" fill="#000"/><rect x="7.5" y="8.5" width="9" height="7" rx="1" fill="none" stroke="#fff" stroke-width="1.5"/></svg>
+          <span><u>I</u>nicio</span>
+        </a>
+        <a href="LPM.html" class="nav-app-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#e040fb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>
+          <span>Gestor de <u>c</u>ontraseñas (<u>P</u>)</span>
+        </a>
+      </div>
     </div>
   </section>
 

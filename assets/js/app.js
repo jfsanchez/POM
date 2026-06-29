@@ -1012,7 +1012,6 @@
     lockError.textContent = "";
     searchInput.value = "";
     updateFileInfo();
-    setTimeout(function () { passwordInput.focus(); }, 50);
   }
 
   function truncateFileName(name, max) {
@@ -1192,6 +1191,7 @@
         updateFileInfo();
         lockError.textContent = "";
         ingestLoadedFile();
+        setTimeout(function () { passwordInput.focus(); }, 50);
       }, function (err) {
         lockError.textContent = "Error: " + (err.message || err);
       });
@@ -1406,10 +1406,10 @@
       });
     });
 
-    /* --- Usar archivo de ejemplo --- */
+    /* --- Cargar archivo de prueba --- */
     exampleBtn.addEventListener("click", function () {
       fetch("assets/examples/codes.example.json", { cache: "no-store" }).then(function (r) {
-        if (!r.ok) throw new Error("No se pudo cargar el archivo de ejemplo");
+        if (!r.ok) throw new Error("No se pudo cargar el archivo de prueba");
         return r.text();
       }).then(function (text) {
         STATE.fileText = text;

@@ -66,7 +66,7 @@ body::before {
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
-  padding: 44px 48px;
+  padding: 44px 48px 0;
   text-align: center;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1);
@@ -131,6 +131,8 @@ body::before {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-6px); }
 }
+
+#unlock-form { margin-top: 16px; }
 
 .lock-card h1 {
   font-size: 2rem;
@@ -326,6 +328,7 @@ body::before {
 /* ===================== Sección de opciones ===================== */
 .options-section {
   margin-top: 18px;
+  margin-bottom: 40px;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--card-border);
   border-radius: 14px;
@@ -345,10 +348,52 @@ body::before {
   color: #7d78a3;
 }
 .options-header svg { width: 16px; height: 16px; }
-/* Dentro de la sección, el file-picker ocupa todo el ancho */
-.options-section .file-picker { margin-top: 0; }
-/* El switch dentro de opciones va en su propia fila */
+#file-source-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+#file-source-options svg {
+  flex: none;
+}
+#file-source-options .file-picker {
+  margin-top: 0;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  min-height: 100%;
+}
+#file-source-options .btn-create-vault {
+  margin-top: 0;
+  gap: 8px;
+  font-size: 0.85rem;
+  padding: 12px 14px;
+  justify-content: center;
+  width: 100%;
+  border-radius: 12px;
+}
+#file-source-options .btn-demo-subtle {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  padding: 12px 14px;
+  border-radius: 12px;
+}
+
+@media (max-width: 580px) {
+  #file-source-options { grid-template-columns: 1fr; }
+}
 .options-section .switch-toggle { margin-top: 0; }
+.view-settings-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #7d78a3;
+  white-space: nowrap;
+}
 
 /* ===================== Toggle switch ===================== */
 .switch-toggle {
@@ -406,6 +451,7 @@ body::before {
   color: #7d78a3;
   font-size: 0.78rem;
   margin-top: 20px;
+  margin-bottom: 30px;
   line-height: 1.5;
 }
 
@@ -1080,9 +1126,15 @@ main { padding: 26px; flex: 1; }
 .action-btn.tertiary-action:hover { color: var(--text); }
 
 /* ===================== Navegación entre apps ===================== */
-.nav-app-links {
+.lock-card > .nav-app-links {
   display: flex;
   gap: 8px;
+  margin: 0 -48px 0 -48px;
+  padding: 12px 48px;
+  border: none;
+  border-top: 1px solid var(--card-border);
+  border-radius: 0 0 22px 22px;
+  background: rgba(0, 0, 0, 0.15);
 }
 .nav-app-link {
   flex: 1;
@@ -1097,13 +1149,12 @@ main { padding: 26px; flex: 1; }
   font-size: 0.85rem;
   font-weight: 500;
   transition: color 0.2s, background 0.2s;
-  border: 1px solid transparent;
+  border: 1px solid var(--card-border);
 }
 .nav-app-link svg { width: 18px; height: 18px; flex: none; }
 .nav-app-link:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--card-border);
+  background: rgba(124, 77, 255, 0.15);
 }
 
 /* ===================== File picker primary (lock screen) ===================== */
@@ -1132,18 +1183,20 @@ main { padding: 26px; flex: 1; }
   display: block;
   width: 100%;
   margin-top: 6px;
-  padding: 6px 10px;
+  padding: 8px 10px;
   background: none;
-  border: none;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
   cursor: pointer;
   color: var(--muted);
   font-size: 0.78rem;
   text-align: center;
-  transition: color 0.2s;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
 }
 .btn-demo-subtle:hover {
   color: var(--text);
-  text-decoration: underline;
+  background: rgba(124, 77, 255, 0.12);
+  border-color: var(--accent);
 }
 
 /* ===================== Botón crear bóveda vacía ===================== */
